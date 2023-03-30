@@ -49,7 +49,7 @@
       function drawCircle(context, entity) {
         with (context) {
           beginPath();
-          lineWidth = 3;
+          lineWidth = 5;
           var x = entity["x"];
           var y = entity["y"];
           //moveTo(x,y);
@@ -63,7 +63,7 @@
             2.0 * Math.PI,
             false
           );
-          stroke();
+          entity["radius"] > 35 ? fill() : stroke();
         }
       }
 
@@ -239,15 +239,20 @@
       // Add the application specific mouse listeners!
       //XXX: TODO Make these prettier!
       mouse.mousedowners.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "blue" });
+        addEntityWithoutName({ x: x, y: y, colour: randColor(), radius: 50 });
       });
 
       mouse.mouseuppers.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "red" });
+        addEntityWithoutName({ x: x, y: y, colour: randColor(), radius: 50 });
       });
 
       mouse.mousedraggers.push(function (x, y, clicked, e) {
-        addEntityWithoutName({ x: x, y: y, colour: "green", radius: 10 });
+        addEntityWithoutName({
+          x: x,
+          y: y,
+          colour: randColor(),
+          radius: Math.floor(Math.random() * (35 - 15) + 15),
+        });
       });
 
       function update() {
@@ -256,7 +261,6 @@
 
       function wsSetup() {
         var url = "ws://" + host + "/subscribe";
-        console.log(url)
         socket = new WebSocket(url);
         socket.onopen = function () {
           //XXX: TODO What are you going to do here?
@@ -285,6 +289,16 @@
             alert("socket on message: " + e);
           }
         };
+      }
+
+      function randColor() {
+        return (
+          "#" +
+          Math.floor(Math.random() * 16777215)
+            .toString(16)
+            .padStart(6, "0")
+            .toUpperCase()
+        );
       }
 
       wsSetup();
